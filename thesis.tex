@@ -1,0 +1,61 @@
+\documentclass{iitbthesis}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{epstopdf}
+\usepackage{epsfig}
+\usepackage{empheq}
+\usepackage{bm}
+\usepackage{url}
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
+\usepackage{appendix}
+\usepackage[section]{placeins}  %to stop floating of figures b/w sections
+\usepackage[a4paper, vmargin={5cm,3cm}, hmargin={3cm,2cm}]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{vmargin}
+\setpapersize{A4}
+\setmarginsrb{30mm}{15mm}{20mm}{22mm}{3mm}{12mm}{3mm}{10mm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\parsep}{20pt}
+\setlength{\textwidth}{160mm}
+\setlength{\textheight}{245mm}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{\textit{Thesis Title}}
+\lfoot{\textit{Electrical Engineering Dept.}}
+\cfoot{\thepage}
+\rfoot{\textit{IIT Bombay}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\author{AUTHOR NAME}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\input{chapter0_initial/TitlePage.tex}
+\input{chapter0_initial/Approval.tex}
+\input{chapter0_initial/Declaration.tex}
+\input{chapter0_initial/Acknowledgement.tex}
+\input{chapter0_initial/Abstract.tex}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\input{chapter1/chapter1.tex}
+\input{chapter2/chapter2.tex}
+\input{chapter3/chapter3.tex}
+\input{chapter4/chapter4.tex}
+\input{chapter5/chapter5.tex}
+\input{appendix/appendix.tex}
+
+\bibliographystyle{IEEEtran}
+\bibliography{reference1}
+                                                                                                                 
+\end{document}
