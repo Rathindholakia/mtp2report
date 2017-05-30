@@ -42,5 +42,76 @@ Fig. \ref{fig:wams} Shows a simplified architecture of modern Wide Area Measurem
 \section{IEEE C37.118 Standard}
 
 \subsection{Need of the standard}
-This standard is for synchrophasor measurement, it defines synchronised phasor and frequency measurement is substation alng with requirements for measurement varification. Role of this standard is that measurements taken complient with and abiding to this standard will be readily accurately usable for power system amalysis purposes. Standard achives this by stating minimum necessary performance requirements of time-tagging, sampling and communication requirements to which a PMU has to adher.	 
+This standard is for synchrophasor measurement, it defines synchronised phasor and frequency measurement is substation alng with requirements for measurement verification. Role of this standard is that measurements taken complient with and abiding to this standard will be readily accurately usable for power system analysis purposes. Standard achieves this by stating minimum necessary performance requirements of time-tagging, sampling and communication requirements to which a PMU has to adhere.
+
+IEEE 1344-1995 is the original standard which was succeeded by IEEE C37.118-2005. 2005 standard mostly followed equipment manufacturers and the system integrators and was stating performance of steady-state conditions. After the advancements and development in fault analysis dynamic synchrophasors were being used for the control and analysis.  which was the major reason of Revision-2011, which was immediately followed by revision 2014 which simplified the stringent norms laid down by it's predecessor.
+
+\subsection{Definations, acronyms and abbriviations}
+
+Before diving in to details lets clear out few useful terminologies for ease of understanding and appreciation of the subject:\\
+\textbf{Phasor:} A complex equivalent of a sinusoidal wave quantity such that the complex modulus is the cosine wave amplitude, and the complex angle (in polar form) is the cosine wave phase angle.\\
+\textbf{UTC:} Its is the time of day at the earth's prime meridian.\\
+\textbf{ROCOF:} It is the measure at which the frequency changes in a given instance of time.\\
+\textbf{Rate of change of Frequency Error (RFE):} The measure of error between the theoretical ROCOF and the measured ROCOF for the given instant of time.\\
+\textbf{Frame:} A data frame or a frame of data is a set of synchrophasor, frequency, and ROCOF measurements that corresponds to the same time stamp.\\
+\textbf{Anti-aliasing:}The process of filtering a signal before sampling to remove components of that signal whose frequency is equal to or greater than the Nyquist frequency (one-half the sample rate). If not removed, these signal components would appear as a lower frequency component (an alias).\\
+\textbf{Nyquist frequency:} A frequency that is one-half the sampling frequency of a discrete signal processing
+system.\\
+
+\subsection{Requirements and Compliance}
+Just like all other engineering devices PMU's reliability, accuracy  and precision are very crucial for its application and hence different kinds of test are done to validate its performance. Hence just like other measuring devices PMU standards are defined which states minimum performance requirement(s). All device should at least meet the requirement stated by the standards, according their application.
+
+
+\subsubsection{Total Vector Error}
+Classically error is the deviation of the measurement from the ideal quantity. It is computed from the difference between the Actual to the measured value. In case of synchrophasors the comparison involves difference in both amplitude and angle which are time dependent making the task even tougher. these quantities are considered combinely in the standards and is called "Total Vector Error (TVE)" \cite{c37.118}.  
+
+TVE is an expression of the difference between a ``perfect" sample of a theoretical synchrophasor and the estimate given by the unit under test at the same instant of time. The value is normalized and expressed in per unit of the theoretical phasor. Which can be mathematically represented as: 
+\begin{equation}
+TVE(n) = \sqrt{\frac{ (\hat{X}_r(n) - X_r(n))^2 + (\hat{X}_i(n)-X_i(n))^2} {X_r(n)^2 + X_i(n)^2}}
+\end{equation}
+Here $ \hat{X}_r (n)$ and $\hat{X}_i(n) $ are the estimated values of the given phasor and $X_r$ and $X_i$ are the theoretical values.
+To be complient with standard, PMU shall provide synchrophasor, frequency, and ROCOF measurements that meet the requirements as per the standards at a given time instance \textit{n}. Similarly for freq and ROCOF the validation will be done using following equations:
+\begin{eqnarray}
+FE == |f_{true}-f_{measured}| = |\Delta f_{true}-\Delta f_{measured}| \\
+RFE == |(df/dt)_{true}-(df/dt)_{measured} |
+\end{eqnarray}
+
+\subsubsection{Class of PMU:}
+Depending up on the application PMU are classified in two types and depending upon the class their error tolerance is evaluated, there are two classes:
+\begin{enumerate}
+	\item \textbf{Measurement Class (M):} As the name suggests these are used for measurement and instrumentation purposes. These PMUs are intended for slower response time and greater precision. These kind of PMUs are used for analytical purposes and hence often do not require minimal (reporting) delay or fastest reporting speed.
+	\item \textbf{Protection Class (P):} These PMUs are designed for fastest responses time. They may have (slightly) inferior reporting precision and soft-realtime operation. 
+	mandates no explicit filtering
+\end{enumerate} 
+
+\subsubsection{Validation \& Testing }
+
+To get the TVE, compliance tests are performed and during the test only the quantity under test is varied from the reference condition as per the test and other relevant quantities are maintained at reference condition. There are following kind of compliance tests:
+\begin{enumerate}
+	\item Steady-state compliance
+	\begin{enumerate}
+		\item Steady-state synchrophasor measurement requirements
+		\item Steady-state frequency and ROCOF measurement requirements
+	\end{enumerate}
+	\item Dynamic compliance
+	\begin{enumerate}
+		\item Synchrophasor measurement bandwidth requirements using modulated test signals
+		\item Ramp of system frequency
+		\item Step changes in phase and magnitude
+	\end{enumerate}
+\end{enumerate} 
+The TVE tolerance for each case wont be mentioned here as those tables can be looked into the standards.
+
+
+\subsubsection{Time Synchronization}
+
+The PMU should be capable of receiving time from a reliable and accurate source such as GPS that can provide time traceable to UTC with sufficient accuracy for calculating Total Vector Error (TVE), Frequency Error and rate of change of frequency error (RFE), all measurements are synchronized to UTC.
+This is a vital parameter because time error of 1$\mu$s would result in to 0.022 degree and 0.018 degree in 60 Hz and 50 Hz systems respectively. And a phase error of 0.57$\deg$ will result in to 1\% TVE. This corresponds to error tolerance of $\pm26 ~\mu$s for 60 Hz and $\pm 31 ~\mu s$ for 50 Hz system.
+
+\subsubsection{Performance Parameters}
+
+\begin{itemize}
+	\item \textit{Measurement Reporting Latency:} Latency 
+\end{itemize}
+
 
