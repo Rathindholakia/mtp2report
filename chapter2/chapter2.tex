@@ -4,6 +4,44 @@ Depending upon the function we can split the design of a PMU in three parts.
 A. Signal Input \& Sampling part
 B. Processing of Samples  
 C. Transmission of data
-Different parts will havediffern
-\subsection{Subsection 1}
+Here different parts will have different requirements. So, we will first state the minimum requirement stated by standards or aimed by us.
+
+\subsubsection{ADC Requirements}
+While deciding upon the ADC specification we kept following requirements: 
+\begin{itemize}
+	\item Good sampling rate: ~64 Samples/cycle
+	\item No of channels: 3 + 3 = 6 (3 - $\phi$ voltage and current) 
+	\item Interfacing type: It should be memory addressable and voltage level compatible .
+	\item Input type: FSS analog output is differential which can be configured as single ended, it's voltage level is $\pm$10V
+\end{itemize}
+
+\subsubsection{Processing}
+PMU has stringent timing requirement, samples needs to be processed in given deadline of reporting time, for this a processor having good ALU would be preferable, for which DSP core is best suited for rapid low level and hard realtime computation. Normal Discrete Fourier Transform requires of complexity O($N^{2}$) operations hence the computation requirement increases as the sample count increases. 
+
+\subsubsection{Transmission of data}
+Realtime transmission of data is mandated by the standards\cite{c37.118}. For that different protocols like Realtime  Media Transfer Protocol (RMTP) or other ways can be used but it would require a sufficiently capable ethernet socket, so we decided to have at least 10/100 MBPs.
+
+Initially we decided to use TI OMAPL-137 which is a dual asymmetric-core processor, in which one core is of DSP and other one is of ARMv7 a brief description is given below and detailed description is given in Appendix.
+ 
+Due to a strange mishap our OMAP L137 stopped working so new processor was chosen which was AM3359 which is a single core ARM Cortex-A8, 1 GHz processor, we decided to use BeagleBone Black which is an low-coast open source community supported multipurpose board. All hardware design is made available and complete programmatic access to the hardware is given which gives complete flexibility for development and implementation. Simplified technical description of the board is given below:
+\begin{table}
+		\begin{center}
+			\setlength\arrayrulewidth{1pt}
+			\begin{tabular}{|c|c|}
+				\hline
+				Processor & Sitara AM3358BZC 1 GHz, 2000MIPS\\
+				\hline
+				Graphic Engine  SGX530 3D, 20M & Polygons\\
+				\hline
+%				SDRAM Mem
+%				\hline
+%				Onboard Flash
+%				\hline
+%				Ports \& Headers & UART0-4 via 6 pin header, 	USB2.0 hostport \& Client ports
+%				\hline
+			\end{tabular}
+		\end{center}
+\end{table}
+
+
 \section{Chapter 2 Section 2}

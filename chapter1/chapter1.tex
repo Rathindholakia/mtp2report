@@ -108,10 +108,32 @@ The TVE tolerance for each case wont be mentioned here as those tables can be lo
 The PMU should be capable of receiving time from a reliable and accurate source such as GPS that can provide time traceable to UTC with sufficient accuracy for calculating Total Vector Error (TVE), Frequency Error and rate of change of frequency error (RFE), all measurements are synchronized to UTC.
 This is a vital parameter because time error of 1$\mu$s would result in to 0.022 degree and 0.018 degree in 60 Hz and 50 Hz systems respectively. And a phase error of 0.57$\deg$ will result in to 1\% TVE. This corresponds to error tolerance of $\pm26 ~\mu$s for 60 Hz and $\pm 31 ~\mu s$ for 50 Hz system.
 
+\subsubsection{Reporting Rate}
+Estimate of synchrophasor, Frequency and ROCOF will be made so that they can be reported to data concentrator and the reporting rate should be constant i.e. the time difference between two reports received from a PMU should be same. This reporting rate will be integer number of times per second and should be in integer multiple of the of the power nominal-frequency. Hence required rate of reporting as mentioned below:
+
+\begin{table}
+	\begin{center}
+		\setlength\arrayrulewidth{1pt}
+		\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+			\hline
+			System Frequency & \multicolumn{3}{c}{50 Hz} & \multicolumn{6}{|c|}{60 Hz}\\
+			\hline 
+			Reporting Rate (Fs)& 10 & 25 & 50 & 	10& 12 &15 & 20 & 30 & 60\\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+ 
+
 \subsubsection{Performance Parameters}
+These are the parameters considered as qualitative factors to judge the PMU performance. 
 
 \begin{itemize}
-	\item \textit{Measurement Reporting Latency:} Latency 
+	\item  \textit{Measurement response time:} Measurement response time is the time to transition between two steady-state measurements before and
+	after a step change is applied to the input. This is measured by applying a step change in amplitude or phase and holding the input constant otherwise and measuring the time taken  by the PMU to settle to a steady-state value. response time is determined from the accuracy evaluation of the measurements, not step time or the stepped	parameters themselves.
+	\item \textit{Measurement delay time:} It is the time difference between the step input applied and the measurement time that the output reaches 50\% of the final or steady state value.  
+	\item \textit{Measurement Reporting Latency:} Reporting Latency is the time lag between the event occurs in the power system and it is reported in the data. It is one of the important quantitative and qualitative parameter, as it depends on al most all factors involved like sample window, filter delay, processing time, processor speed etc. Here reporting rate and PMU class play major role in deciding the delay. 
+	\item \textit{Measurement and operational errors:} It is a self-health-test flag. as per standard PMU should send a status flag with each measurement stating the error at PMU end. this error bit can incorporate issue in any aspect(s) like ADC error, memory over flow, etc.
 \end{itemize}
 
-
+\subsubsection{Communication Compliance}
