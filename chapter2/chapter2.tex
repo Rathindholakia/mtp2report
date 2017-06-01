@@ -24,6 +24,7 @@ Here different parts will have different requirements. So, we will first state t
 	
 \end{enumerate}
 
+\section{BeagleBone Black}
 Initially we decided to use TI OMAPL-137 which is a dual asymmetric-core processor, in which one core is of DSP and other one is of ARMv7 a brief description is given in Appendix. Due to a mishap our OMAP L137 stopped working so new processor was chosen. which was AM3359 which is a single core ARM Cortex-A8, 1 GHz processor, we decided to use BeagleBone Black which is an low-coast open source community supported multipurpose board. All hardware design is made available and complete programmatic access to the hardware is given which gives complete flexibility for development and implementation. Simplified technical description of the board is given below:
 \begin{table}[h]
 		\begin{center}
@@ -86,3 +87,31 @@ Useful features that we are using and are worth noting are as follow:
 	\item One 16550-compatible UART with a dedicated 192-MHz clock.
 \end{itemize} 
 
+\subsection{ADC Subsystem}
+AM3358 has 200ksps 8 channel muxed single SAR type ADC on it. It is important to understand the functioning of ADC system because we are using few specific features in our implementations (viz Steps, Open Delay and Sample Delay). AM3358 has Touch Screen Controller and Analog to Digital Converter system combined (know as TSC\_ADC\_Subsystem) \cite{AM3358TRM} . Few main feature of ADC Systems are: 
+\begin{itemize}
+	\item[--] Programmable FSM sequencer that supports 16 steps.
+	\item[--] Software register bit for start of conversion
+	\item[--] Dual Conversion Modes: One-shot \& Continuous
+	\item[--] Sequence through all input channels based on a mask
+	\item[--] Programmable OpenDelay before sampling each channel
+	\item[--] Programmable sampling delay for each channel
+	\item[--] Programmable averaging of input samples - 16/8/4/2/1
+	\item[--] Differential or singled ended mode setting for each channel
+	\item[--] Store data in either of two FIFO groups
+	\item[--] Dynamically enable or disable channel inputs during operation
+\end{itemize}
+AM3358's ADC system is very flexible and hence bit complicated to use. Each function is controlled by a "step" so each activated feature (either ADC or TSC) is assigned a step number between 1-15 (step -0 is charge step, for touch screen; Step-16 idle) and accordingly the sequencer will iterate through the steps and there by channel(s). sequencer is completely software controlled so the sampling trigger or delay can be configured programmatically.
+\begin{itemize}
+	\item \textbf{Open Delay \& Sample Delay:} User can decide when the voltage should be driven to the ADC and when should ADC start sampling. This delay is used for letting the voltage stabilize in case of weak signal input or impedance mismatch.This is \textit{Open Delay}. Sample Delay decides the width of the SoC width.
+	\item \textbf{Averaging of Sample:} ADC system has an averaging system which averages 1(no averaging), 2, 6 ,8 12 and 16 times. If averaging is tunrned ON, say for N samples then ADC system will immediately re-sample the signal (same channel) N times, will average all the samples \textit{and then} will put it to FIFO buffer.
+	\item \textbf{Single-Shot or Continuous Mode:} In Oneshot mode sequencer finishes the sampling and conversion of all enabled channels, disables the channels and waits for another trigger. In continuous mode, sequencer loops back to the first step to restart the conversion process all over again, till the STEPENABLE bit is resetted.    
+\end{itemize} 
+
+\section{Implementation Overview}
+An overview of PMU implementation, using AM335x based beaglebone black is show in fig 
+\begin{figure}
+	
+\end{figure}
+
+ 
