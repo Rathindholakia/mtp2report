@@ -101,7 +101,7 @@ AM3358 has 200ksps 8 channel muxed single SAR type ADC on it. It is important to
 	\item[--] Store data in either of two FIFO groups
 	\item[--] Dynamically enable or disable channel inputs during operation
 \end{itemize}
-AM3358's ADC system is very flexible and hence bit complicated to use. Each function is controlled by a "step" so each activated feature (either ADC or TSC) is assigned a step number between 1-15 (step -0 is charge step, for touch screen; Step-16 idle) and accordingly the sequencer will iterate through the steps and there by channel(s). sequencer is completely software controlled so the sampling trigger or delay can be configured programmatically.
+AM3358's ADC system is very flexible and hence bit complicated to use. Each function is controlled by a ``step" so each activated feature (either ADC or TSC) is assigned a step number between 1-15 (step -0 is charge step, for touch screen; Step-16 idle) and accordingly the sequencer will iterate through the steps and there by channel(s). sequencer is completely software controlled so the sampling trigger or delay can be configured programmatically.
 \begin{itemize}
 	\item \textbf{Open Delay \& Sample Delay:} User can decide when the voltage should be driven to the ADC and when should ADC start sampling. This delay is used for letting the voltage stabilize in case of weak signal input or impedance mismatch.This is \textit{Open Delay}. Sample Delay decides the width of the SoC width.
 	\item \textbf{Averaging of Sample:} ADC system has an averaging system which averages 1(no averaging), 2, 6 ,8 12 and 16 times. If averaging is tunrned ON, say for N samples then ADC system will immediately re-sample the signal (same channel) N times, will average all the samples \textit{and then} will put it to FIFO buffer.
@@ -109,9 +109,40 @@ AM3358's ADC system is very flexible and hence bit complicated to use. Each func
 \end{itemize} 
 
 \section{Implementation Overview}
-An overview of PMU implementation, using AM335x based beaglebone black is show in fig 
+An overview of PMU implementation, using AM335x based BeagleBone Black is show in fig 
 \begin{figure}
 	
+	\caption{Overview of implementation}
 \end{figure}
 
- 
+The implementation being described is a synchronized operation of three independent asynchronous subsystems: PRU, ADC and ARM core.
+\begin{itemize}
+	\item A C program is written which configures PRU and uploads a binary file in to the PRU(1). PRU binary files does three task:
+	\begin{enumerate}
+		\item Configure ADC, with 
+		\begin{itemize}
+			\item Open Delay (\texttt{OpD}) = 0 
+			\item Sample delay (\texttt{SaD}) = 0 
+			\item Sample Averaging (\texttt{SAvg}) = 1 and 
+			\item Timer delay [\texttt{Tmr}]= 156250 ns
+			\item \texttt{Mode} = continuous 
+		\end{itemize}
+		\item Define the bank to be used as buffer, and size of buffer
+		\item Parse the data received from FIFO buffer (of ADC) in to the ring buffer. 
+	\end{enumerate}
+	\item 6 ADC channels are enabled and the sampling are is 128 samples/cycle/channel. the OpenDelay and Sample Delay are kept zero because our signal strength is enough. Timer delay is configured to $ \frac{1}{128 * 50} = 156250 ~ns $.
+	\item In continuous mode the buffer is defined as ring buffer and the   buffer length is kept $ 128 * 6 = 768 * 2 = 1536 $. buffer length is kept double for reading and filling the buffer in Ping-Pong fashion.  
+	\begin{figure}[h]
+		\includegraphics[width=\textwidth]{fig/ring_buffer.eps}
+		\caption{Ring Buffer length and Ping Pong depicted}
+		\label{fig:rb_pp}
+	\end{figure}
+	\item C program after uploading the bin file, sets the execution bit, This initiates the PRU execution, which initiates ADC sampling with given configuration. PRU continuously fetches the the data from the output FIFO of ADC and puts it in to ring buffer \textit{continuously} in sequential order of [ \texttt{A0 A1 A2 A3 A4 A5 A0 A1.....A4, A5}].
+	\item On the ARM side C program creates two pointers \texttt{p0} and \texttt{P1}, one at the beginning (0) and another in the middle (768th location)of the buffer. which is used for polling the no. of readings filled in the buffer. 
+	\item C program keeps on polling until the half buffer is filled after which it starts reading the buffer from the beginning and mean while PRU will keep on filling the second half of the buffer.
+	\item Once the pointer(s) reaches the end, they go back to beginning and there by the process continuous.
+\end{itemize}
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{fig/ping_pong.eps}
+\end{figure}
