@@ -111,7 +111,7 @@ AM3358's ADC system is very flexible and hence bit complicated to use. Each func
 \section{Implementation Overview}
 An overview of PMU implementation, using AM335x based BeagleBone Black is show in fig 
 \begin{figure}
-	
+	\includegraphics[width=\textwidth]{fig/sys_overview.eps}
 	\caption{Overview of implementation}
 \end{figure}
 
@@ -121,28 +121,90 @@ The implementation being described is a synchronized operation of three independ
 	\begin{enumerate}
 		\item Configure ADC, with 
 		\begin{itemize}
-			\item Open Delay (\texttt{OpD}) = 0 
+			\item Enables 6 channels by writing to \texttt{STEPCONFIGx}
+			\item Configures Open Delay (\texttt{OpD}) = 0, by writing zeros to \texttt{STEPDELAYx} register  
 			\item Sample delay (\texttt{SaD}) = 0 
-			\item Sample Averaging (\texttt{SAvg}) = 1 and 
+			\item Sample Averaging (\texttt{SAvg}) = 1  by writting ones to  \texttt{STEPCONFIGx} registers and 
 			\item Timer delay [\texttt{Tmr}]= 156250 ns
 			\item \texttt{Mode} = continuous 
 		\end{itemize}
 		\item Define the bank to be used as buffer, and size of buffer
 		\item Parse the data received from FIFO buffer (of ADC) in to the ring buffer. 
 	\end{enumerate}
-	\item 6 ADC channels are enabled and the sampling are is 128 samples/cycle/channel. the OpenDelay and Sample Delay are kept zero because our signal strength is enough. Timer delay is configured to $ \frac{1}{128 * 50} = 156250 ~ns $.
+	\item 6 ADC channels are enabled and the sampling rate is set to 128 samples/cycle/channel (using \texttt{Tmr} delay). the OpenDelay and Sample Delay are kept zero because our signal strength is enough. Timer delay is configured to $ \frac{1}{128 * 50} = 156250 ~ns $.
 	\item In continuous mode the buffer is defined as ring buffer and the   buffer length is kept $ 128 * 6 = 768 * 2 = 1536 $. buffer length is kept double for reading and filling the buffer in Ping-Pong fashion.  
 	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{fig/ring_buffer.eps}
 		\caption{Ring Buffer length and Ping Pong depicted}
 		\label{fig:rb_pp}
 	\end{figure}
-	\item C program after uploading the bin file, sets the execution bit, This initiates the PRU execution, which initiates ADC sampling with given configuration. PRU continuously fetches the the data from the output FIFO of ADC and puts it in to ring buffer \textit{continuously} in sequential order of [ \texttt{A0 A1 A2 A3 A4 A5 A0 A1.....A4, A5}].
-	\item On the ARM side C program creates two pointers \texttt{p0} and \texttt{P1}, one at the beginning (0) and another in the middle (768th location)of the buffer. which is used for polling the no. of readings filled in the buffer. 
-	\item C program keeps on polling until the half buffer is filled after which it starts reading the buffer from the beginning and mean while PRU will keep on filling the second half of the buffer.
-	\item Once the pointer(s) reaches the end, they go back to beginning and there by the process continuous.
+	\item C program after uploading the bin file, sets the execution bit, This initiates the PRU execution, which signals ADC to start sampling with given configuration. PRU continuously fetches the the data from the output FIFO register of ADC and puts it in to ring buffer \textit{continuously} in sequential order of enabled channels [ \texttt{A0 A1 A2 A3 A4 A5 A0 A1.....A4, A5}].
+	\item On the ARM side C program creates two pointers and using Ping Pong method over ring buffer reads the ADC samples in chunks. Brief description of how this works is described below and see Fig: \ref{fig:ping_pong}.
+	\begin{itemize}
+		\item[--] A buffer of double size then the target size is created (here of 1536 words) and two pointer  \texttt{P0} and \texttt{P1} are created, which points to the start and the middle of the buffer respectively. [ Step - 1 ]
+		\item[--] Out of two pointer one works as \texttt{write head} and other as \texttt{read head}. So P0 keeps the track of number of ADC samples parsed in the buffer. [ Step-2 ]
+		
+		
+		\begin{figure}
+			\includegraphics[width=\textwidth]{fig/ping_pong.eps}
+			\caption{Ping-Pong Process Visualized}
+			\label{fig:ping_pong}
+		\end{figure}
+		
+		
+		\item When P0 (write head) reaches 768 samples (128* 6, one whole cycle of all channels), pointers are swapped, P1 becomes the write head and P0 becomes the read head and goes to the beginning of the buffer and starts reading, while write head (pointer P1) continuous to write samples into buffer [ Step-3 ]
+		\item Read operation is faster then write ( as PRU has to wait for the samples to arrive depending upon the sampling rate). read head reaches the middle while P1is still writing the samples. [ Step-5 ]
+		\item After reaching the end of buffer, Pointers are again swapped, P1 again becomes the read head and P0 Write head, which starts reading from the middle and the write goes to the beginning of the buffer and starts filling the samples. [ Step-6 ]
+		\item From this point it is same as the beginning and the whole cycle repeats. [ Step-7 ]
+	\end{itemize} 
+	\item This way C program keeps on toggling between two buffers and there by allowing for concurrent reading and writing operation
+	\item A visual depiction of the Ping-Pong process described above is show in the Fig: \ref{fig:ping_pong}
 \end{itemize}
 
-\begin{figure}
-	\includegraphics[width=\textwidth]{fig/ping_pong.eps}
+\begin{figure}[h]
+	\includegraphics[width=\textwidth]{fig/PRU_config.eps}
+	\caption{PRU Configuration Methods}
+	\label{fig:pru_config}
 \end{figure}
+
+\subsection{PRU Configuration}
+There are several way to configure PRUs, depending upon the kernel version, Operating System and the mode of connection.
+\begin{enumerate}
+	\item PRUIO - PASM 
+	\item Remote\_Proc
+	\item Direct firmware loading via JTAG
+\end{enumerate}
+
+A visual overview of different way of accessing PRUs is show in Fig: \ref{fig:pru_config}.
+\subsubsection{PRUIO}
+ For Kernel version older then 3.9 PRUIO kernel module is used which uses a Device Tree Overlay. Device trees are a way to describe Hardware in system, their memory address, their port number or there function. A good example of it would be how UART is described in the system. Device tree enables addition of new hardware in run-time from User Space, in the kernel architecture. 
+ 
+ Usually "Board File" is used in kernel package to describe a hardware of specific embedded system, but given the huge number of ever increasing ARM based devices it was impossible to incorporate all the boards' file in to main Kernel. So Linus Torvalds \cite{DThist} suggested the use of DT , to simplify the kernel maintenance and up-keeping while providing complete flexibility to describe their processor (something that was already being done by PowerPC manufacturers). So, usage of kernel module and Device Tree enables enables us to configure PRUs and use them. it maps PRU's register memory address to our use space addresses and enables direct access to them. 
+ 
+ A separate library  called as "libpruio" \cite{libpruio} is used here, for convenience and rapid development. The library provides C and FreeBasic API's for accessing and configuring ADC, GPIO and PWM modules. It uses converts user C code to Assembly Language via PASM and uploads it to the respective PRUs.
+ 
+ \subsubsection{Remote\_Proc}
+ Modern SoCs have multiple processors and processor cores on them in asymmetric multiprocessing (AMP) configuration. which may be running different instances  of operating system, whether it's Linux or any other flavor of real-time OS  . So to enable single kernel to control all those remote processors while abstracting hardware differences and there by reducing the duplication of code \textit{Remote Processor FrameWork} is used \cite{remoteproc}.
+
+
+\subsection{Time Tag and Data Processing}
+
+As seen in the previous section, data is read in chunks each chunk has 768 samples which consists of 128 samples from all 6 channels. This makes it more convenient to handle and process the data. Time stamp is stored when the first sample is written to the buffer (for ping) and another time stamp is stored when pointers are swapped (for Pong). 
+\begin{itemize}
+	\item DFT window of 3 cycle 384 is chosen for better frequency resolution, and then hamming window is applied to smooth out the samples.
+	\item After dot product of samples with hamming constant, DFT is done and frequency is extracted from the beans. 
+	\item Frequency resolution is of 0.5 Hz which can seen in figure below.
+	\item After extracting the frequency, Amplitude is extracted by computing the power of all the frequency beans.
+	\item this gives us angle 
+\end{itemize}
+
+\subsection{Communication}
+After DFT is calculated we have the necessary information to send. Structure of the frame depends upon the configuration and specification of the PMU. Hence as per standards a configuration frames should be communicated by PMU to PDC, which lists following things:
+\begin{enumerate}
+	\item Time Format 
+	\item Number of phasors
+	\item Format of the phasor (rect or polar)
+	\item Frequency
+	\item Number of digital status, if any
+	\item Error Bit
+\end{enumerate}
