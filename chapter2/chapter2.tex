@@ -181,24 +181,36 @@ A visual overview of different way of accessing PRUs is show in Fig: \ref{fig:pr
  
  Usually "Board File" is used in kernel package to describe a hardware of specific embedded system, but given the huge number of ever increasing ARM based devices it was impossible to incorporate all the boards' file in to main Kernel. So Linus Torvalds \cite{DThist} suggested the use of DT , to simplify the kernel maintenance and up-keeping while providing complete flexibility to describe their processor (something that was already being done by PowerPC manufacturers). So, usage of kernel module and Device Tree enables enables us to configure PRUs and use them. it maps PRU's register memory address to our use space addresses and enables direct access to them. 
  
- A separate library  called as "libpruio" \cite{libpruio} is used here, for convenience and rapid development. The library provides C and FreeBasic API's for accessing and configuring ADC, GPIO and PWM modules. It uses converts user C code to Assembly Language via PASM and uploads it to the respective PRUs.
+ A library  called as "libpruio" \cite{libpruio} is used here, for convenience and rapid development. The library provides C and FreeBasic API's for accessing and configuring ADC, GPIO and PWM modules. It uses converts user C code to Assembly Language via PASM and uploads it to the respective PRUs. A detailed explanation along with program listing is given in Appendix-1.
  
  \subsubsection{Remote\_Proc}
- Modern SoCs have multiple processors and processor cores on them in asymmetric multiprocessing (AMP) configuration. which may be running different instances  of operating system, whether it's Linux or any other flavor of real-time OS  . So to enable single kernel to control all those remote processors while abstracting hardware differences and there by reducing the duplication of code \textit{Remote Processor FrameWork} is used \cite{remoteproc}.
+ Modern SoCs have multiple processors and processor cores on them in asymmetric multiprocessing (AMP) configuration. which may be running different instances  of operating system, whether it's Linux or any other flavor of real-time OS  . So to enable single kernel to control all those remote processors while abstracting hardware differences and there by reducing the duplication of code \textit{Remote Processor Framework} is used \cite{remoteproc}.
+ 
+ Here in case of AM3358, Remoteproc acts as a framework that allows the ARM host processor(s) to load firmware into PRU cores, start the PRU cores, stop the PRU cores, and configure resources that the PRUs might need during their execution (such as configuring the PRUSS INTC module and providing shared buffers in DDR memory for message passing).
+
+\subsubsection{Direct Loading}
+TI provides different development mediums for it's products, For  AM335x also, there existed - Sys/BIOS support, TI Starterware support and Ti Processors-SDK support. out of which Sys/Bios ad Starterware are a non-OS solution which posses bare minimum driver support in form of modules, which is very useful in rapid development and due to no OS, latency was brought down to bare minimum.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth/2]{fig/bbb_jtag.jpg}
+	\caption{A BeagleBone connected Via Ti's Hawk JTAG}
+\end{figure}
+
+Efforts were made to utilize Sys/Bios initially for the project but it had become obsolete and was being phased out which resulted into poor support for relatively newer processor like AM3358. Then efforts were made for using TI-Processor SDK as well, but it required a special ARM \texttt{TMDSEMU100v2U-20T} JTAG-extension header-connector which was not available and hence had to be dismissed. But in principal if one possesses the JTAG, TI-processors SDK can be a very competitive implementation compared to a Linux based implementation, due to real-time capability, direct access to PRU and optimized device drivers by Ti itself.
 
 
-\subsection{Time Tag and Data Processing}
+\subsection{Time stamp, GPS interfacing and Data Processing }
+As seen in the previous section, data is read in chunks each chunk has 768 samples which consists of 128 samples from all 6 channels. This makes it more convenient to handle and process the data. Using GPS for time reference was aimed but due to hardware interfacing issues, GPS could not be interfaced instead Network Time Protocol (NTP) is being used for time-keeping. Time stamp for each frame is stored on the first sample of the frame written to the buffer.
 
-As seen in the previous section, data is read in chunks each chunk has 768 samples which consists of 128 samples from all 6 channels. This makes it more convenient to handle and process the data. Time stamp is stored when the first sample is written to the buffer (for ping) and another time stamp is stored when pointers are swapped (for Pong). 
 \begin{itemize}
 	\item DFT window of 3 cycle 384 is chosen for better frequency resolution, and then hamming window is applied to smooth out the samples.
 	\item After dot product of samples with hamming constant, DFT is done and frequency is extracted from the beans. 
-	\item Frequency resolution is of 0.5 Hz which can seen in figure below.
-	\item After extracting the frequency, Amplitude is extracted by computing the power of all the frequency beans.
-	\item this gives us angle 
-\end{itemize}
+	\item Frequency resolution is of 0.5 Hz is aimed.
+	\item After extracting the frequency, amplitude and angle is extracted by computing the power of all the frequency beans and averaging it and from the \texttt{arctan} of the complex result.
+\end{itemize} 
 
 \subsection{Communication}
+
 After DFT is calculated we have the necessary information to send. Structure of the frame depends upon the configuration and specification of the PMU. Hence as per standards a configuration frames should be communicated by PMU to PDC, which lists following things:
 \begin{enumerate}
 	\item Time Format 
@@ -208,3 +220,27 @@ After DFT is calculated we have the necessary information to send. Structure of 
 	\item Number of digital status, if any
 	\item Error Bit
 \end{enumerate}
+
+The frame configuration used by our device is as show below:
+\begin{itemize}
+	\item TimeTag (8 byte)
+	\item 6 phasor entity (6 * 8 bytes)
+	\item Frequency (8 Bytes)
+\end{itemize}
+Once the device turns ON, it PMU establishes a communication to the PDC, by communicating a acknowledgment string once that is communicated PMU starts sending the data to the PDC. Currently PDC is implemented by us, which receives the data over ethernet via TCP/IP, separates each information from frames and writes it to the file. For evaluation purposes the communication delay, sampling delays and reporting time are computed. This is done by computing the time difference between two frame received, by measuring time difference between two time tags of consecutive data frames and by measuring the time taken for the data packets to be received. 
+
+\section{Challenges Faced}
+There were several challenges faced and solved which are worth mentioning for others who might embark on this path and face it
+
+\begin{itemize}
+	\item GPS module interfacing
+	
+	NavSync CW-12 TIM GPS module was chosen to provide time to the device. It was connected to the GPS antenna, power was provided and sometimes it lock to 3 Satellites but it fails to get interfaced via serial ports. It has UART \texttt{RxD} and \texttt{TxD} , \texttt{GND} and \texttt{Vcc} pin out.  For configuring it a utility called \textit{WinOnCore} is provided for Windows bases systems. GPS module's UART is connected to PC via FTDI R232L serial to serial convert IC and sends messages to the utility. The problem is while grounds of both system (GPS receiver and PC) are separate WinOnCore fails to communicate with the module but upon looking in "serial terminal" some random message are being thrown by the module. Yet, the moment ground of device is connected to the ground of PC, even those messages stop working. This is a very unusual behavior, Efforts with different power supply, with a new GPS receiver, with different USB to serial converter but all efforts are futile yet.
+	
+	\item DFT computation Time 
+	PMU's DFT requirements are not so complicated and the computational power at hand is also limited hence simple brute force DFT is tried. but it was taking huge time to compute on ARM processor. Initial latency observed was as high as $4.23 ~ms$/channel. Which was optimized by implementing \texttt{look-up tables} and by removing the \texttt{divisions} and putting multiply instead. Now each DFT operation typically  takes 240 to 400 $\mu s$. 
+	
+	\item Overlapping ADC samples 
+	
+
+\end{itemize}
