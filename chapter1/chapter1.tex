@@ -2,16 +2,16 @@
 \pagenumbering{arabic}  % 1, 2, 3, 4, ...
 \setcounter{page}{1}
 
-Electric energy has become one of the most important source of energy and is widely used resource in world, with ever increasing demand of resource it becomes more and more difficult to maintain the system and Power System is no exception. Power System has become a complex entity and has gone beyond the limit of manual operation and control, which makes automation and ``smart" control imperative. This creates demand for a new set of measurement, operation and control tools. Out of these tools measurement tools are the most fundamental building block of a modern power system, which is now also know as ``smart grid". Measurement devices are ``eyes" and ``ears" in the system to the centralized ``brain", an operating-control-corrective system.  
+Electric energy has become one of the most important source of energy and is a widely used resource around the world, with ever increasing demand of this resource it becomes more and more difficult to maintain the system and Power System is no exception. Power System has become a complex entity and has gone beyond the limit of manual operation and control, which makes automation and ``smart" control imperative. This creates a demand for a new set of measurement, operation and control tools. Out of these tools, PMUs are a vital component in operation and control of a modern power system, which is now also know as ``smart grid". Measurement devices are ``eyes" and ``ears" in the system to the centralized ``brain", an operating-control-corrective system.  
 
-In power system active power and frequency are the most important parameters to be monitored, flow of active power depends upon the phase angle of voltages between the buses. Flow of active power decides the structure of network (transmission lines, capacity of devices etc.) and hence accurate measurement of it has been of great interest since 1960-70s \cite{agphadkebook}. Conventionally \textit{relative phase difference} between buses in the network was used, due to limitation of the communication links, computational power and  economic feasibility. This method(s) were slow, moderately accurate and depends upon tons of heavy and/or manual calculation. 
-After the advancements in telecommunication technologies and their speed \& reliability, better computation power and satellite availability, trend of \textit{absolute phase difference} measurement came in to existence \cite{PMUhist}. The earliest system using absolute phase difference was reported in 1980 using LORAN-C satellite and HBG radio transmission for the time reference. And during the same period Global Positioning System (GPS) was being implemented by United States, which was immediately recognised as one of the best way of synchronizing the power system, which brought the ``Phasor Measurement" and ``Synchrophasor" era in to existence. Lot of research was carried out and is being carried out in this area, a considerable volume of papers are available and are still being published in different aspect of synchrophasor measurement.
+In power system active power and frequency are two of the most important parameters to be monitored. Flow of active power over a transmission line depends upon the phase angular difference between phasor voltages of the two buses connected by it. The active power demand decides the structure of network (transmission lines, capacity of devices etc.) and hence accurate measurement of it has been of great interest since 1960s \cite{agphadkebook}. Conventionally \emph{relative phase difference} between buses in the network was used, due to limitation of the communication links, computational power and  economic feasibility. These method(s) were slow, moderately accurate and depends upon tons of heavy and/or manual calculation. 
+After the advancements in telecommunication technologies and their speed \& reliability, better computation power and satellite availability, a trend of \emph{absolute phase difference} measurement came in to existence \cite{PMUhist}. The earliest system using absolute phase difference was reported in 1980 using LORAN-C satellite and HBG radio transmission for the time reference. And during the same period Global Positioning System (GPS) was being implemented by United States, which was immediately recognised as one of the best way of synchronizing the power system and which brought the ``Phasor Measurement" and ``Synchrophasor" era in to existence. Lot of research was carried out and is being carried out in this area, a considerable volume of papers are available and are still being published in different aspects of synchrophasor measurement.
 
 
 \section{Phasors, Synchrophasors and PMUs}
 \subsection{Phasors: Definition}
 
-In 1893 C. Steinmetz in his paper introduced a simplified mathematical description of the waveform of an alternating current electricity which he called as a``phasor". In Physics and Engineering, a \textit{phasor} is a complex number representing a sinusoidal quantity whose amplitude (A), angular velocity ($\omega$) and initial phase ($\phi$) are time-invarient. It is an analytic representation which decomposes \textit{sine} function in to the product of \textit{complex constants} and a factor which \textit{encapsulates} the frequency and time dependence. The complex constant, which encapsulates amplitude and phase dependence, is known as phasor, complex amplitude, and (in older texts) sinorx or even complexor.
+In 1893, C. Steinmetz in his paper introduced a simplified mathematical description of the waveform of an alternating current electricity which he called as a``phasor". In Physics and Engineering, a \emph{phasor} is a complex number representing a sinusoidal quantity whose amplitude (A), angular velocity ($\omega$) and initial phase ($\phi$) are time-invarint. It is an analytic representation which decomposes \emph{sine} function in to the product of \emph{complex constants} and a factor which \emph{encapsulates} the frequency and time dependence. The complex constant, which encapsulates amplitude and phase dependence, is known as phasor, complex amplitude, and (in older texts) sinorx or even complexor.
 
 Which using Euler's formula can be represented mathematically as:
 \begin{equation}\boldmath
@@ -39,20 +39,20 @@ Classically, operation of grid was done by Supervisory Control And Data Acquisit
 	\label{fig:wams}
 \end{figure}
 
-Fig. \ref{fig:wams} shows a simplified architecture of a modern Wide Area Measurement System. PMUs are installed at different substations on high voltage and medium voltage buses, via CTs and PTs, each PMU has multiple channels sampling AC waves at a high rate. Rate of sampling varies according to the manufacturer and implementation of the scheme. Each PMU is provided a GPS receiver for accurate time with an accuracy of approx 500 - 600 ns which is necessary for achieving time accuracy of 1-2 $\mu$s demanded by the standard. Each data after being sampled is then filtered using different DFT/FFT algorithm and is time stamped. This time stamped data is then sent to either SCADA or to a local Phasor Data Concentrator (PDC), which consolidates the data stream coming from different PMUs and sends a bandwidth optimized data stream to the higher PDC or SCADA. 
+Fig. \ref{fig:wams} shows a simplified architecture of a modern Wide Area Measurement System. PMUs are installed at different substations on high voltage and medium voltage buses, via CTs and PTs, each PMU has multiple channels sampling AC waves at a high rate. Rate of sampling varies according to the manufacturer and implementation of the scheme. Each PMU is provided a GPS receiver for accurate time reference with an accuracy of approx 500 - 600 ns which is necessary for achieving time accuracy of 1-2 $\mu$s demanded by the standard. Each data after being sampled is then filtered using different DFT/FFT algorithm and is time stamped. This time stamped data is then sent to either SCADA or to a local Phasor Data Concentrator (PDC), which consolidates the data stream coming from different PMUs and sends a bandwidth optimized data stream to the higher PDC or SCADA. 
 
 \section{IEEE C37.118 Standard}
 
 \subsection{Need of the standard}
 This standard is for synchrophasor measurement, it defines synchronized phasor and frequency measurement in substation along with requirements for measurement verification. Role of this standard is that measurements taken, compliant with and abiding to this standard will be readily and accurately usable for power system analysis. Standard achieves this by stating minimum necessary performance requirements of time-tagging, sampling and communication requirements to which a PMU has to adhere.
 
-IEEE 1344-1995 is the original standard which was succeeded by IEEE C37.118-2005. 2005 standard mostly followed equipment manufacturers and the system integrators and was stating performance of steady-state conditions. After the advancements and development in fault analysis dynamic synchrophasors were being used for the control and analysis.  which was the major reason of Revision-2011, which was immediately followed by revision 2014 which simplified the stringent norms laid down by it's predecessor.
+IEEE 1344-1995 is the original standard which was succeeded by IEEE C37.118-2005. Standard of 2005 mostly followed equipment manufacturers and the system integrators and was stating performance of steady-state conditions. After the advancements and development in fault analysis, dynamic synchrophasors were being used for control and analysis. Which was the major reason of Revision-2011, which was immediately followed by revision 2014, simplifying the stringent norms laid down by its predecessor.
 
 \subsection{Definitions, acronyms and abbreviations}
 
 Before diving in to details lets clear out few useful terminologies for ease of understanding and appreciation of the subject:\\
 \textbf{Phasor:} A complex equivalent of a sinusoidal wave quantity such that the complex modulus is the cosine wave amplitude, and the complex angle (in polar form) is the cosine wave phase angle.\\
-\textbf{UTC:} Its is the time of day at the earth's prime meridian.\\
+\textbf{UTC:} It is the time of day at the earth's prime meridian.\\
 \textbf{ROCOF:} It is the measure at which the frequency changes in a given instance of time.\\
 \textbf{Rate of change of Frequency Error (RFE):} The measure of error between the theoretical ROCOF and the measured ROCOF for the given instant of time.\\
 \textbf{Frame:} A data frame or a frame of data is a set of synchrophasor, frequency, and ROCOF measurements that corresponds to the same time stamp.\\
@@ -61,18 +61,18 @@ Before diving in to details lets clear out few useful terminologies for ease of 
 system.\\
 
 \subsection{Requirements and Compliance}
-Just like all other engineering devices PMU's reliability, accuracy  and precision are very crucial for its application and hence different kinds of test are done to validate its performance. Hence just like other measuring devices PMU standards are defined which states minimum performance requirement(s). All device should at least meet the requirement stated by the standards, according their application.
+Just like all other engineering devices PMU's reliability, accuracy  and precision are very crucial for its application and hence different kinds of test are done to validate its performance. Hence just like other measuring devices PMU standards are defined to state minimum performance requirement(s). All devices should at least meet the requirements stated by the standards, according their application.
 
 
 \subsubsection{Total Vector Error}
-Classically error is the deviation of the measurement from the ideal quantity. It is computed from the difference between the \textit{actual} to the \textit{measured} value. In case of synchrophasors the comparison involves difference in both amplitude and angle which are also time dependent making error computation a time dependent and computationally intensive task. Hence, to make error time independent and simpler, the amplitude and phase are considered jointly in the standard and a new qualitative factor is devised which is called, "Total Vector Error (TVE)" \cite{c37.118}.  
+Classically, error is the deviation of the measurement from the ideal quantity. It is computed from the difference between the \emph{actual} to the \emph{measured} value. In case of synchrophasors the comparison involves difference in both amplitude and angle which are also time dependent, making error computation a time dependent and computationally intensive task. Hence, to make error time independent and simpler, the amplitude and phase are considered jointly in the standard and a new qualitative factor is devised which is called, "Total Vector Error (TVE)" \cite{c37.118}.  
 	
 TVE is an expression of, the difference between a ``perfect" sample of a theoretical synchrophasor and the estimate given by the unit under test at the same instant of time. The value is normalized and expressed in per unit (PU) of the theoretical phasor. Which can be mathematically represented as: 
 \begin{equation}
 TVE(n) = \sqrt{\frac{ (\hat{X}_r(n) - X_r(n))^2 + (\hat{X}_i(n)-X_i(n))^2} {X_r(n)^2 + X_i(n)^2}}
 \end{equation}
 Here $ \hat{X}_r (n)$ and $\hat{X}_i(n) $ are the estimated values of the given phasor and $X_r$ and $X_i$ are the theoretical values.
-To be compliant with standard, PMU shall provide synchrophasor, frequency and ROCOF measurements that meet the TVE requirements as per the standard at a given time instance \textit{n}. Similarly for frequency and ROCOF the validation will be done using following equations \cite{c37.118}:
+To be compliant with standard, PMU shall provide synchrophasor, frequency and ROCOF measurements that meet the TVE requirements as per the standard at a given time instance \emph{n}. Similarly for frequency and ROCOF the validation will be done using following equations \cite{c37.118}:
 \begin{eqnarray}
 FE == |f_{true}-f_{measured}| = |\Delta f_{true}-\Delta f_{measured}| \\
 RFE == |(df/dt)_{true}-(df/dt)_{measured} |
@@ -81,7 +81,7 @@ RFE == |(df/dt)_{true}-(df/dt)_{measured} |
 \subsubsection{Class of PMU:}
 Depending up on the application PMU are classified in two types and depending upon the class their error tolerance is evaluated, there are two classes:
 \begin{enumerate}
-	\item \textbf{Measurement Class (M):} As the name suggests these are used for measurement and instrumentation purposes. These PMUs are intended for slower response time but \textit{greater} precision. These kind of PMUs are used for analytical purposes and hence often do not require minimal (reporting) delay or fastest reporting speed.
+	\item \textbf{Measurement Class (M):} As the name suggests these are used for measurement and instrumentation purposes. These PMUs are intended for slower response time but \emph{greater} precision. These kind of PMUs are used for analytical purposes and hence often do not require minimal (reporting) delay or fastest reporting speed.
 	\item \textbf{Protection Class (P):} These PMUs are designed for fastest responses time. They may have (slightly) inferior reporting precision and soft-realtime operation. This PMU class mandates no explicit filtering.
 \end{enumerate} 
 
@@ -130,11 +130,11 @@ Estimate of synchrophasor, frequency and ROCOF will be made so that they can be 
 These are the parameters considered as qualitative factors to judge the PMU performance. 
 
 \begin{itemize}
-	\item  \textit{Measurement response time:} Measurement response time is the time to transition between two steady-state measurements before and
+	\item  \emph{Measurement response time:} Measurement response time is the time to transition between two steady-state measurements before and
 	after a step change is applied to the input. This is measured by applying a step change in amplitude or phase and holding the input constant otherwise and measuring the time taken  by the PMU to settle to a steady-state value. Response time is determined from the accuracy evaluation of the measurements, not step time or the stepped	parameters themselves.
-	\item \textit{Measurement delay time:} It is the time difference between the step input applied and the measurement time that the output reaches 50\% of the final or steady state value.  
-	\item \textit{Measurement Reporting Latency:} Reporting Latency is the time lag between the event occurs in the power system and it is reported in the data. It is one of the important quantitative and qualitative parameter, as it depends on all most all factors involved like sample window, filter delay, processing time, processor speed etc. Here reporting rate and PMU class play major role in deciding the delay. 
-	\item \textit{Measurement and operational errors:} It is a self-health-test flag, as per standard PMU should send a status flag with each measurement stating the error at PMU end. this error bit can incorporate issue in any aspect(s) like ADC error, memory over flow, etc.
+	\item \emph{Measurement delay time:} It is the time difference between the step input applied and the measurement time that the output reaches 50\% of the final or steady state value.  
+	\item \emph{Measurement Reporting Latency:} Reporting Latency is the time lag between the event occurrence in the power system and it is reported in the data. It is one of the important quantitative and qualitative parameter, as it depends on all most all factors involved like sample window, filter delay, processing time, processor speed etc. Here reporting rate and PMU class play major role in deciding the delay. 
+	\item \emph{Measurement and operational errors:} It is a self-health-test flag, as per standard PMU should send a status flag with each measurement stating the error at PMU end. this error bit can incorporate issue in any aspect(s) like ADC error, memory over flow, etc.
 \end{itemize}
 
 \subsubsection{Communication Compliance}

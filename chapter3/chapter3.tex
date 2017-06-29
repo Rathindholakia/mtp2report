@@ -1,9 +1,9 @@
 \chapter{Results and Discussion}
-The device has been designed completely from scratch. So to make it standard compliant it is necessary to test it's all aspect and keep them well below the limit so that final results are well within the stipulated guideline. Hence, here qualitative and quantitative results are presented which include computation latency, reporting rate \& variation, ADC response(s) and amplitude \& frequency estimation.
+The device has been designed completely from scratch. So, to make it standard compliant it is necessary to test all its aspect and keep them well below the limit so that final results are well within the stipulated guideline. Hence, here qualitative and quantitative results are presented which include computation latency, reporting rate \& variation, ADC response(s) and amplitude \& frequency estimation.
 
 \section{Frequency Computation}
 \subsection{Steady State Nominal Frequency Operation}
-First we will see the frequency response of the device. First nominal frequency test was done, where device was given 50 Hz nominal frequency.
+First, we will see the frequency response of the device. First nominal frequency test was done, where device was given 50 Hz nominal frequency.
 \begin{figure}[h]
 	\includegraphics[width=\textwidth]{fig/50Hz_freq_1000samples.eps}
 	\caption{Deice Frequency Response to 50 Hz sine input}
@@ -26,7 +26,7 @@ If the end part (i.e. steady state, for the device) is zoomed in then oscillatio
 	\caption{Error Plot for 50 Hz input}
 	\label{fig:50Hz error}
 \end{figure}
-For verifying the results coming from the developed PMU, a simulation program was written, same 256 sample moving window DFT was implemented and same nominal frequency input was given which resulted in to output which is show in Fig: \ref{fig:50Hz simulation}. It is important to note here that though by appearance simulation result \textit{profile} looks worse than the actual results obtained from hardware but in reality they are not, it is due to the the high degree of precision. Here as it can be seen in Fig: \ref{fig:50Hz simulation} range of values is  \texttt{Max:49.99999999995302} to \texttt{Min: 50.00000000005302}, which can practically be considered 50.0 Hz. 
+For verifying the results coming from the developed PMU, a simulation program was written, same 256 sample moving window DFT was implemented and same nominal frequency input was given which resulted in to output which is show in Fig: \ref{fig:50Hz simulation}. It is important to note here that though by appearance simulation result \emph{profile} looks worse than the actual results obtained from hardware but in reality they are not, it is due to the the high degree of precision. Here as it can be seen in Fig: \ref{fig:50Hz simulation} range of values is  \texttt{Max:49.99999999995302} to \texttt{Min: 50.00000000005302}, which can practically be considered 50.0 Hz. 
 \begin{figure}[h]
 	\includegraphics[width=\textwidth]{fig/50Hz_simulated.eps}
 	\caption{Simulation Output at 50 Hz}
@@ -99,7 +99,7 @@ Contrary to the steady state 50 Hz operation, in case of off nominal frequency o
 	\label{fig:49.8Hz ang}
 \end{figure}
  
-Representative plots of two phasors at 49.5 Hz and 49.8 Hz are presented here. And we can see the \textit{angle wrap} taking place due to relative difference in angular velocity.
+Representative plots of two phasors at 49.5 Hz and 49.8 Hz are presented here. And we can see the \emph{angle wrap} taking place due to relative difference in angular velocity.
 
 \subsubsection{Computation delay}
 Completion of all computation and processing within given time limit is necessary. For 50 Hz system 20 ms is the time period within which whole process should be over. In this section we will see the latency involved in computation. Fig: \ref{fig:simpleLatency} shows the time taken by the program in computing DFT.
